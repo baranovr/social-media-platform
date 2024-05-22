@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
 
+from social_media.models import Post
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,11 +14,12 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "full_name",
             "is_staff",
             "password",
             "date_joined"
         )
-        read_only_fields = ("is_staff", "date_joined",)
+        read_only_fields = ("date_joined",)
         extra_kwargs = {
             "password": {
                 "write_only": True,
@@ -41,3 +44,39 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    posts_count = serializers.SerializerMethodField()
+
+    def get_posts_count(self, obj):
+        return Post.objects.filter(user=obj).count()
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "id",
+            "username",
+            "full_name",
+            "email",
+            "posts_count",
+            "is_staff",
+            "date_joined"
+        )
+
+
+class UserDetailSerializer(UserSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+            "is_staff",
+            "date_joined",
+            "posts"
+        )
+        read_only_fields = ("is_staff", "date_joined")

@@ -9,23 +9,20 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ("id", "user", "title", "content", "date_posted",)
 
 
+class CommentInPostSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ("id", "user", "content", "created_at", "updated_at")
+
+
 class PostListSerializer(PostSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
     
     class Meta:
         model = Post
         fields = ("id", "user", "title", "date_posted",)
-
-
-class PostDetailSerializer(PostSerializer):
-    user = serializers.CharField(source="user.username", read_only=True)
-    user_email = serializers.CharField(source="user.email", read_only=True)
-    
-    class Meta:
-        model = Post
-        fields = (
-            "id", "user", "user_email", "title", "content", "date_posted",
-        )
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -35,23 +32,30 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentListSerializer(CommentSerializer):
+    post_title = serializers.CharField(source="post.title", read_only=True)
     user = serializers.CharField(source="user.username", read_only=True)
-    comment_id = serializers.IntegerField(source="id", read_only=True)
     
     class Meta:
         model = Comment
-        fields = ("id", "post", "user", "comment_id", "created_at",)
+        fields = ("id", "post_title", "user", "created_at",)
         read_only_fields = ("created_at",)
 
 
 class CommentDetailSerializer(CommentSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
     user_email = serializers.CharField(source="user.email", read_only=True)
+    post_title = serializers.CharField(source="post.title", read_only=True)
     
     class Meta:
         model = Comment
         fields = (
-            "id", "user", "user_email", "content", "created_at", "updated_at"
+            "id",
+            "user",
+            "user_email",
+            "post_title",
+            "content",
+            "created_at",
+            "updated_at"
         )
         read_only_fields = ("created_at", "updated_at",)
 
@@ -64,7 +68,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class LikeListSerializer(LikeSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
-    post_title = serializers.IntegerField(source="post.title", read_only=True)
+    post_title = serializers.CharField(source="post.title", read_only=True)
     
     class Meta:
         model = Like
@@ -88,7 +92,7 @@ class DislikeSerializer(serializers.ModelSerializer):
 
 class DislikeListSerializer(DislikeSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
-    post_title = serializers.IntegerField(source="post.title", read_only=True)
+    post_title = serializers.CharField(source="post.title", read_only=True)
 
     class Meta:
         model = Like
@@ -102,3 +106,35 @@ class DislikeDetailSerializer(DislikeSerializer):
     class Meta:
         model = Dislike
         fields = ("id", "user", "post")
+
+
+class PostDetailSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source="user.username", read_only=True)
+    user_email = serializers.CharField(source="user.email", read_only=True)
+    likes_count = serializers.SerializerMethodField()
+    dislikes_count = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
+
+    def get_likes_count(self, obj):
+        return Like.objects.filter(post=obj).count()
+
+    def get_dislikes_count(self, obj):
+        return Dislike.objects.filter(post=obj).count()
+
+    def get_comments(self, obj):
+        comments = Comment.objects.filter(post=obj)
+        return CommentInPostSerializer(comments, many=True).data
+
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "user",
+            "user_email",
+            "title",
+            "content",
+            "date_posted",
+            "likes_count",
+            "dislikes_count",
+            "comments",
+        )

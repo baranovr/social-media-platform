@@ -28,7 +28,7 @@ class PostViewSet(viewsets.ModelViewSet):
         username = self.request.query_params.get("user.username", None)
         title = self.request.query_params.get("title", None)
         date_posted = self.request.query_params.get(
-            "date_posted_date", None
+            "date_posted", None
         )
 
         queryset = self.queryset
@@ -90,6 +90,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
+    serializer_class = LikeSerializer
 
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
@@ -117,6 +118,7 @@ class LikeViewSet(viewsets.ModelViewSet):
 
 class DislikeViewSet(viewsets.ModelViewSet):
     queryset = Dislike.objects.all()
+    serializer_class = DislikeSerializer
 
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)

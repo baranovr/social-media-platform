@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext as _
 from django.db import models
 
+from social_media.models import Post
 
 class UserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -37,7 +38,18 @@ class User(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
     first_name = models.CharField(_("first name"), max_length=50)
     last_name = models.CharField(_("last name"), max_length=50)
+    posts = models.ForeignKey(
+        Post, blank=True,
+        null=True,
+        related_name="user_posts",
+        on_delete=models.CASCADE
+    )
     password = models.CharField(_("password"), max_length=30)
+
+    @property
+    def full_name(self):
+        """Method to get full name of user"""
+        return f"{self.first_name} {self.last_name}"
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
