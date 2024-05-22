@@ -70,6 +70,15 @@ class LikeListSerializer(LikeSerializer):
         fields = ("id", "user", "post_title")
 
 
+class LikeDetailSerializer(LikeSerializer):
+    user = serializers.CharField(source="user.username", read_only=True)
+    post = PostSerializer(source="post", read_only=True)
+
+    class Meta:
+        model = Like
+        fields = ("id", "user", "post")
+
+
 class DislikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dislike
@@ -83,3 +92,12 @@ class DislikeListSerializer(DislikeSerializer):
     class Meta:
         model = Like
         fields = ("id", "user", "post_title")
+
+
+class DislikeDetailSerializer(DislikeSerializer):
+    user = serializers.CharField(source="user.username", read_only=True)
+    post = PostSerializer(source="post", read_only=True)
+
+    class Meta:
+        model = Dislike
+        fields = ("id", "user", "post")
