@@ -33,7 +33,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    is_active = None
     username = models.CharField(_("username"), max_length=50, unique=True)
     email = models.EmailField(_("email address"), unique=True)
     first_name = models.CharField(_("first name"), max_length=50)
@@ -44,7 +43,7 @@ class User(AbstractUser):
     EMAIL_FIELD = "email"
 
     REQUIRED_FIELDS = [
-        "username", "email", "first_name", "last_name", "password"
+        "email", "first_name", "last_name", "password"
     ]
 
     objects = UserManager()
