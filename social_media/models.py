@@ -1,6 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 from social_media_platform import settings
+
 
 
 class Post(models.Model):
@@ -60,3 +62,20 @@ class Dislike(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.post}"
+
+
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="subscriber"
+    )
+    subscribed = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="subscribed"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (("subscriber", "subscribed"),)
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.subscriber} is subscribed on {self.subscribed}"

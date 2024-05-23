@@ -2,10 +2,13 @@ from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
 
-from social_media.models import Post
+from social_media.models import Post, Subscription
 
 
 class UserSerializer(serializers.ModelSerializer):
+    subscribers = serializers.SerializerMethodField()
+    subscriptions = serializers.SerializerMethodField()
+
     class Meta:
         model = get_user_model()
         fields = (
@@ -17,9 +20,11 @@ class UserSerializer(serializers.ModelSerializer):
             "full_name",
             "is_staff",
             "password",
-            "date_joined"
+            "date_joined",
+            "subscribers",
+            "subscriptions"
         )
-        read_only_fields = ("date_joined",)
+        read_only_fields = ("date_joined", "subscribers", "subscriptions",)
         extra_kwargs = {
             "password": {
                 "write_only": True,
@@ -27,6 +32,12 @@ class UserSerializer(serializers.ModelSerializer):
                 "min_length": 8,
             }
         }
+
+    def get_subscribers(self, obj):
+        return Subscription.objects.filter(subscribed=obj).count()
+
+    def get_subscriptions(self, obj):
+        return Subscription.objects.filter(subscriber=obj).count()
 
     def create(self, validated_data):
         password = validated_data.pop("password", None)
@@ -44,6 +55,12 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class UserSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ("id", "username", "email")
 
 
 class UserListSerializer(serializers.ModelSerializer):
@@ -77,6 +94,8 @@ class UserDetailSerializer(UserSerializer):
             "full_name",
             "is_staff",
             "date_joined",
+            "subscribers",
+            "subscriptions",
             "posts"
         )
         read_only_fields = ("is_staff", "date_joined")

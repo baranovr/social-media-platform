@@ -1,6 +1,10 @@
 from datetime import datetime
 
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from social_media.serializers import (
     PostSerializer,
@@ -14,15 +18,19 @@ from social_media.serializers import (
     DislikeSerializer,
     DislikeListSerializer,
     LikeDetailSerializer,
-    DislikeDetailSerializer
+    DislikeDetailSerializer,
+    SubscriptionSerializer,
+    SubscriberListSerializer,
+    SubscriptionsListSerializer
 )
 
-from social_media.models import Post, Comment, Like, Dislike
+from social_media.models import Post, Comment, Like, Dislike, Subscription
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
@@ -53,6 +61,24 @@ class PostViewSet(viewsets.ModelViewSet):
             return PostDetailSerializer
 
         return PostSerializer
+
+    def update(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, pk=kwargs["pk"])
+        author = post.user
+
+        if author != request.user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, pk=kwargs["pk"])
+        author = post.user
+
+        if author != request.user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        return super().destroy(request, *args, **kwargs)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -87,6 +113,24 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         return CommentSerializer
 
+    def update(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=kwargs["pk"])
+        author = comment.user
+
+        if author != request.user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        comment = get_object_or_404(Comment, pk=kwargs["pk"])
+        author = comment.user
+
+        if author != request.user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return super().destroy(request, *args, **kwargs)
+
 
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
@@ -115,6 +159,15 @@ class LikeViewSet(viewsets.ModelViewSet):
 
         return LikeSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        like = get_object_or_404(Like, pk=kwargs["pk"])
+        liker = like.user
+
+        if liker != request.user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return super().destroy(request, *args, **kwargs)
+
 
 class DislikeViewSet(viewsets.ModelViewSet):
     queryset = Dislike.objects.all()
@@ -142,3 +195,38 @@ class DislikeViewSet(viewsets.ModelViewSet):
             return DislikeDetailSerializer
 
         return DislikeSerializer
+
+    def update(self, request, *args, **kwargs):
+        like = get_object_or_404(Dislike, pk=kwargs["pk"])
+        liker = like.user
+
+        if liker != request.user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return super().update(request, *args, **kwargs)
+
+
+class SubscriptionViewSet(viewsets.ModelViewSet):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+
+    @action(detail=False, methods=["GET"])
+    def subscribers(self, request):
+        user = request.user
+
+        if user.is_authenticated:
+            subscriptions = Subscription.objects.filter(subscribed=user)
+            serializer = SubscriberListSerializer(subscriptions, many=True)
+            return Response(serializer.data)
+
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(detail=False, methods=["GET"])
+    def subscribed(self, request):
+        user = request.user
+        if user.is_authenticated:
+            subscriptions = Subscription.objects.filter(subscriber=user)
+            serializer = SubscriptionsListSerializer(subscriptions, many=True)
+            return Response(serializer.data)
+
+        return Response(status=status.HTTP_401_UNAUTHORIZED)

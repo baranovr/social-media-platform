@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from social_media.models import Post, Comment, Like, Dislike
+from social_media.models import Post, Comment, Like, Dislike, Subscription
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -138,3 +138,46 @@ class PostDetailSerializer(serializers.ModelSerializer):
             "dislikes_count",
             "comments",
         )
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    subscriber = serializers.CharField(
+        source="subscriber.username", read_only=True
+    )
+    subscribed = serializers.CharField(
+        source="subscribed.username", read_only=True
+    )
+
+    class Meta:
+        model = Subscription
+        fields = ("id", "subscriber", "subscribed", "created_at")
+        read_only_fields = ("created_at",)
+
+
+class SubscriberListSerializer(SubscriptionSerializer):
+    class Meta:
+        model = Subscription
+        fields = ("id", "subscriber")
+
+
+class SubscribedDetailSerializer(serializers.ModelSerializer):
+    sub_username = serializers.CharField(
+        source="subscribed.username", read_only=True
+    )
+    sub_posts_count = serializers.SerializerMethodField()
+    sub_date_joined = serializers.DateField(
+        source="subscribed.date_joined", read_only=True
+    )
+
+    class Meta:
+        model = Subscription
+        fields = ("id", "sub_username", "sub_posts_count", "sub_date_joined")
+
+    def get_sub_posts_count(self, obj):
+        return Subscription.objects.filter(subscribed=obj).count()
+
+
+class SubscriptionsListSerializer(SubscriptionSerializer):
+    class Meta:
+        model = Subscription
+        fields = ("id", "subscribed")
