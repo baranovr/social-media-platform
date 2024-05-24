@@ -20,7 +20,7 @@ from social_media.serializers import (
     LikeDetailSerializer,
     DislikeDetailSerializer,
     SubscriptionSerializer,
-    SubscriberListSerializer,
+    SubscribersListSerializer,
     SubscriptionsListSerializer
 )
 
@@ -216,7 +216,7 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
 
         if user.is_authenticated:
             subscriptions = Subscription.objects.filter(subscribed=user)
-            serializer = SubscriberListSerializer(subscriptions, many=True)
+            serializer = SubscribersListSerializer(subscriptions, many=True)
             return Response(serializer.data)
 
         return Response(status=status.HTTP_401_UNAUTHORIZED)

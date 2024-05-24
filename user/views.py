@@ -7,21 +7,21 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-
 from social_media.serializers import (
-    SubscriberListSerializer,
+    SubscribersListSerializer,
     SubscriptionsListSerializer,
     PostDetailSerializer,
-    SubscribedDetailSerializer,
-    PostListSerializer
+    PostListSerializer,
+    SubscriptionsDetailSerializer, SubscribersDetailSerializer
 )
 
 from social_media.models import Subscription, Post
 
 from user.serializers import (
     UserSerializer,
-    UserListSerializer,
-    UserDetailSerializer
+    UserSearchListSerializer,
+    UserProfileSerializer,
+    UserSearchDetailSerializer
 )
 
 
@@ -36,7 +36,7 @@ class CreateTokenView(ObtainAuthToken):
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserDetailSerializer
+    serializer_class = UserProfileSerializer
 
     def get_object(self):
         return self.request.user
@@ -57,8 +57,8 @@ class UserPostDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Post.objects.filter(user=self.request.user)
 
 
-class UserListView(generics.ListAPIView):
-    serializer_class = UserListSerializer
+class UserSearchListView(generics.ListAPIView):
+    serializer_class = UserSearchListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def get_queryset(self):
@@ -73,6 +73,21 @@ class UserListView(generics.ListAPIView):
             return queryset.distinc()
 
         if user_id:
+            queryset = queryset.filter(id=user_id)
+
+        return queryset
+
+
+class UserSearchDetailView(generics.RetrieveAPIView):
+    serializer_class = UserSearchDetailSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        User = get_user_model()
+        queryset = User.objects.all()
+        user_id = self.kwargs.get("pk", None)
+
+        if user_id is not None:
             queryset = queryset.filter(id=user_id)
 
         return queryset
@@ -98,28 +113,39 @@ class SubscribeView(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
-class SubscriberListView(APIView):
-    def get(self, request):
-        subscriptions = Subscription.objects.filter(subscribed=request.user)
-        serializer = SubscriberListSerializer(subscriptions, many=True)
-        return Response(serializer.data)
+class SubscriberListView(generics.ListAPIView):
+    serializer_class = SubscribersListSerializer
+
+    def get_queryset(self):
+        return Subscription.objects.filter(subscribed=self.request.user)
 
 
-class SubscriptionsListView(APIView):
-    def get(self, request):
-        subscriptions = Subscription.objects.filter(subscriber=request.user)
-        serializer = SubscriptionsListSerializer(subscriptions, many=True)
-        return Response(serializer.data)
+class SubscribersDetailView(generics.RetrieveAPIView):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscribersDetailSerializer
+
+    def get_object(self):
+        subscription_id = self.kwargs.get("pk")
+        subscription = Subscription.objects.get(
+            id=subscription_id, subscribed=self.request.user
+        )
+        return subscription
 
 
-class UnsubscribeView(APIView):
-    def delete(self, request, pk):
-        try:
-            subscription = Subscription.objects.get(
-                subscriber=request.user, subscribed__id=pk
-            )
-        except Subscription.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+class SubscriptionsListView(generics.ListAPIView):
+    serializer_class = SubscriptionsListSerializer
 
-        subscription.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def get_queryset(self):
+        return Subscription.objects.filter(subscriber=self.request.user)
+
+
+class SubscriptionsDetailView(generics.RetrieveAPIView):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionsDetailSerializer
+
+    def get_object(self):
+        subscription_id = self.kwargs.get("pk")
+        subscription = Subscription.objects.get(
+            id=subscription_id, subscriber=self.request.user
+        )
+        return subscription

@@ -59,13 +59,28 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserSearchSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(UserSerializer):
     class Meta:
         model = get_user_model()
-        fields = ("id", "username", "email")
+        fields = (
+            "id",
+            "avatar",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+            "is_staff",
+            "about_me",
+            "date_joined",
+            "subscribers",
+            "subscriptions",
+            "posts"
+        )
+        read_only_fields = ("is_staff", "date_joined")
 
 
-class UserListSerializer(serializers.ModelSerializer):
+class UserSearchListSerializer(serializers.ModelSerializer):
     posts_count = serializers.SerializerMethodField()
 
     def get_posts_count(self, obj):
@@ -85,7 +100,7 @@ class UserListSerializer(serializers.ModelSerializer):
         )
 
 
-class UserDetailSerializer(UserSerializer):
+class UserSearchDetailSerializer(UserSerializer):
     class Meta:
         model = get_user_model()
         fields = (

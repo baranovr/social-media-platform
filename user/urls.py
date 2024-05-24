@@ -1,14 +1,16 @@
 from user.views import (
     CreateUserView,
     UserProfileView,
-    UserListView,
+    UserSearchListView,
     SubscribeView,
     SubscriberListView,
     SubscriptionsListView,
-    UnsubscribeView,
     PostListView,
     UserPostDetailView,
     CreateTokenView,
+    UserSearchDetailView,
+    SubscriptionsDetailView,
+    SubscribersDetailView,
 )
 
 from user.logout import logout_view
@@ -32,16 +34,22 @@ urlpatterns = [
         name="subscriber-list"
     ),
     path(
+        "me/subscribers/<int:pk>/",
+        SubscribersDetailView.as_view(),
+        name="subscriber-list"
+    ),
+    path(
         "me/subscriptions/",
         SubscriptionsListView.as_view(),
         name="subscribed-list"
     ),
     path(
-        "me/subscriptions/<int:pk>/unsubscribe/",
-        UnsubscribeView.as_view(),
-        name="unsubscribe"
+        "me/subscriptions/<int:pk>/",
+        SubscriptionsDetailView.as_view(),
+        name="subscribed-detail"
     ),
-    path("users/", UserListView.as_view(), name="users"),
+    path("users/", UserSearchListView.as_view(), name="users"),
+    path("users/<int:pk>/", UserSearchDetailView.as_view(), name="profile"),
     path(
         "users/<int:user_id>/subscribe/",
         SubscribeView.as_view(),

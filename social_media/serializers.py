@@ -77,7 +77,7 @@ class LikeListSerializer(LikeSerializer):
 
 class LikeDetailSerializer(LikeSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
-    post = PostSerializer(source="post", read_only=True)
+    post = PostSerializer(read_only=True)
 
     class Meta:
         model = Like
@@ -155,30 +155,63 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         read_only_fields = ("created_at",)
 
 
-class SubscriberListSerializer(SubscriptionSerializer):
+class SubscriptionsListSerializer(SubscriptionSerializer):
+    class Meta:
+        model = Subscription
+        fields = ("id", "subscribed")
+
+
+class SubscriptionsDetailSerializer(SubscriptionSerializer):
+    avatar = serializers.CharField(
+        source="subscribed.avatar", read_only=True,
+    )
+    username = serializers.CharField(
+        source="subscribed.username", read_only=True
+    )
+    email = serializers.CharField(
+        source="subscribed.email", read_only=True
+    )
+    full_name = serializers.CharField(
+        source="subscribed.full_name", read_only=True
+    )
+    about_user = serializers.CharField(
+        source="subscribed.about_me", read_only=True
+    )
+
+    class Meta:
+        model = Subscription
+        fields = (
+            "id", "avatar", "username", "full_name", "email", "about_user"
+        )
+        read_only_fields = ("id", "created_at")
+
+
+class SubscribersListSerializer(SubscriptionSerializer):
     class Meta:
         model = Subscription
         fields = ("id", "subscriber")
 
 
-class SubscribedDetailSerializer(serializers.ModelSerializer):
-    sub_username = serializers.CharField(
-        source="subscribed.username", read_only=True
+class SubscribersDetailSerializer(SubscriptionSerializer):
+    avatar = serializers.CharField(
+        source="subscriber.avatar", read_only=True,
     )
-    sub_posts_count = serializers.SerializerMethodField()
-    sub_date_joined = serializers.DateField(
-        source="subscribed.date_joined", read_only=True
+    username = serializers.CharField(
+        source="subscriber.username", read_only=True
+    )
+    email = serializers.CharField(
+        source="subscriber.email", read_only=True
+    )
+    full_name = serializers.CharField(
+        source="subscriber.full_name", read_only=True
+    )
+    about_user = serializers.CharField(
+        source="subscriber.about_me", read_only=True
     )
 
     class Meta:
         model = Subscription
-        fields = ("id", "sub_username", "sub_posts_count", "sub_date_joined")
-
-    def get_sub_posts_count(self, obj):
-        return Subscription.objects.filter(subscribed=obj).count()
-
-
-class SubscriptionsListSerializer(SubscriptionSerializer):
-    class Meta:
-        model = Subscription
-        fields = ("id", "subscribed")
+        fields = (
+            "id", "avatar", "username", "full_name", "email", "about_user"
+        )
+        read_only_fields = ("id", "created_at")
