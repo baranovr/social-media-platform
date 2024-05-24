@@ -30,20 +30,23 @@ class PostSerializer(serializers.ModelSerializer):
         )
 
 
-class CommentInPostSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source="user.username", read_only=True)
-
-    class Meta:
-        model = Comment
-        fields = ("id", "user", "content", "created_at", "updated_at",)
-
-
 class PostListSerializer(PostSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
 
     class Meta:
         model = Post
         fields = ("id", "user", "date_posted",)
+
+
+class SubscribedPostListSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        source="user.username", read_only=True
+    )
+
+    class Meta:
+        model = Post
+        fields = ("id", "username", "title", "content", "date_posted",)
+        read_only_fields = ["username"]
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -79,6 +82,14 @@ class CommentDetailSerializer(CommentSerializer):
             "updated_at"
         )
         read_only_fields = ("created_at", "updated_at",)
+
+
+class CommentInPostSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source="user.username", read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ("id", "user", "content", "created_at", "updated_at",)
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -130,7 +141,7 @@ class DislikeDetailSerializer(DislikeSerializer):
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source="user.username", read_only=True)
+    username = serializers.CharField(source="user.username", read_only=True)
     user_email = serializers.CharField(source="user.email", read_only=True)
     likes_count = serializers.SerializerMethodField()
     dislikes_count = serializers.SerializerMethodField()
@@ -151,7 +162,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
         model = Post
         fields = (
             "id",
-            "user",
+            "username",
             "user_email",
             "photo",
             "title",
@@ -162,6 +173,25 @@ class PostDetailSerializer(serializers.ModelSerializer):
             "dislikes_count",
             "comments",
         )
+
+
+class SubscribedPostDetailSerializer(PostDetailSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "username",
+            "user_email",
+            "photo",
+            "title",
+            "content",
+            "hashtags",
+            "date_posted",
+            "likes_count",
+            "dislikes_count",
+            "comments",
+            )
+        read_only_fields = ("username", "user_email")
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

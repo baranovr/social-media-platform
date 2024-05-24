@@ -22,7 +22,8 @@ from social_media.serializers import (
     DislikeDetailSerializer,
     SubscriptionSerializer,
     SubscribersListSerializer,
-    SubscriptionsListSerializer
+    SubscriptionsListSerializer, SubscribedPostListSerializer,
+    SubscribedPostDetailSerializer
 )
 
 from social_media.models import (
@@ -106,6 +107,29 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         return super().destroy(request, *args, **kwargs)
+
+
+class SubscribedPostViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SubscribedPostListSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        subscribed_users = (
+            Subscription.objects.filter(subscriber=user).
+            values_list("subscribed", flat=True)
+        )
+        return (
+            Post.objects.filter(user__in=subscribed_users).
+            order_by("-date_posted")
+        )
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return SubscribedPostListSerializer
+
+        if self.action == "retrieve":
+            return SubscribedPostDetailSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):

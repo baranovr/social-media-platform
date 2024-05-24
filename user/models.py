@@ -44,8 +44,12 @@ def avatar_path(instance, filename):
 
 
 class User(AbstractUser):
-    avatar = models.ImageField(_("avatar"), upload_to=avatar_path, blank=True, null=True)
-    username = models.CharField(_("username"), max_length=50, unique=True)
+    avatar = models.ImageField(
+        _("avatar"), upload_to=avatar_path, blank=True, null=True
+    )
+    username = models.CharField(
+        _("username"), max_length=50, unique=True
+    )
     email = models.EmailField(_("email address"), unique=True)
     first_name = models.CharField(_("first name"), max_length=50)
     last_name = models.CharField(_("last name"), max_length=50)
