@@ -1,9 +1,14 @@
 from datetime import datetime
 
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status, generics
+
+from rest_framework import viewsets, status, generics, permissions
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAdminUser,
+    IsAuthenticatedOrReadOnly
+)
 from rest_framework.response import Response
 
 from social_media.serializers import (
@@ -51,7 +56,20 @@ class HashtagDeleteView(generics.DestroyAPIView):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated,)
+
+    def get_permissions(self):
+        if (
+            self.action == "create" 
+            or self.action == "update" 
+            or self.action == "partial_update"
+            or self.action == "destroy"
+        ):
+            return [permissions.IsAuthenticated()]
+
+        if self.action == "retrieve":
+            return [permissions.IsAuthenticatedOrReadOnly()]
+        else:
+            return [permissions.AllowAny()]
 
     def get_queryset(self):
         username = self.request.query_params.get("user__username", None)
@@ -136,6 +154,18 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
+    def get_permissions(self):
+        if (
+            self.action == "create"
+            or self.action == "update"
+            or self.action == "partial_update"
+            or self.action == "destroy"
+        ):
+            return [permissions.IsAuthenticated()]
+        else:
+            return [permissions.AllowAny()]
+
+
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
         post_title = self.request.query_params.get("post.title", None)
@@ -164,6 +194,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         return CommentSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     def update(self, request, *args, **kwargs):
         comment = get_object_or_404(Comment, pk=kwargs["pk"])
         author = comment.user
@@ -175,9 +211,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         comment = get_object_or_404(Comment, pk=kwargs["pk"])
+        post = get_object_or_404(Post, pk=kwargs["pk"])
         author = comment.user
+        poster = post.user
 
-        if author != request.user:
+        if author != request.user or poster != request.user:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return super().destroy(request, *args, **kwargs)
@@ -186,6 +224,17 @@ class CommentViewSet(viewsets.ModelViewSet):
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
+
+    def get_permissions(self):
+        if (
+            self.action == "create"
+            or self.action == "destroy"
+            or self.action == "update"
+            or self.action == "partial_update"
+        ):
+            return [permissions.IsAuthenticated()]
+        else:
+            return [permissions.AllowAny()]
 
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
@@ -210,6 +259,12 @@ class LikeViewSet(viewsets.ModelViewSet):
 
         return LikeSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     def destroy(self, request, *args, **kwargs):
         like = get_object_or_404(Like, pk=kwargs["pk"])
         liker = like.user
@@ -223,6 +278,17 @@ class LikeViewSet(viewsets.ModelViewSet):
 class DislikeViewSet(viewsets.ModelViewSet):
     queryset = Dislike.objects.all()
     serializer_class = DislikeSerializer
+
+    def get_permissions(self):
+        if (
+            self.action == "create"
+            or self.action == "destroy"
+            or self.action == "update"
+            or self.action == "partial_update"
+        ):
+            return [permissions.IsAuthenticated()]
+        else:
+            return [permissions.AllowAny()]
 
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
@@ -247,6 +313,12 @@ class DislikeViewSet(viewsets.ModelViewSet):
 
         return DislikeSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     def update(self, request, *args, **kwargs):
         like = get_object_or_404(Dislike, pk=kwargs["pk"])
         liker = like.user
@@ -256,28 +328,11 @@ class DislikeViewSet(viewsets.ModelViewSet):
 
         return super().update(request, *args, **kwargs)
 
+    def destroy(self, request, *args, **kwargs):
+        like = get_object_or_404(Like, pk=kwargs["pk"])
+        liker = like.user
 
-class SubscriptionViewSet(viewsets.ModelViewSet):
-    queryset = Subscription.objects.all()
-    serializer_class = SubscriptionSerializer
+        if liker != request.user:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @action(detail=False, methods=["GET"])
-    def subscribers(self, request):
-        user = request.user
-
-        if user.is_authenticated:
-            subscriptions = Subscription.objects.filter(subscribed=user)
-            serializer = SubscribersListSerializer(subscriptions, many=True)
-            return Response(serializer.data)
-
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-    @action(detail=False, methods=["GET"])
-    def subscribed(self, request):
-        user = request.user
-        if user.is_authenticated:
-            subscriptions = Subscription.objects.filter(subscriber=user)
-            serializer = SubscriptionsListSerializer(subscriptions, many=True)
-            return Response(serializer.data)
-
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return super().destroy(request, *args, **kwargs)

@@ -133,7 +133,7 @@ class DislikeListSerializer(DislikeSerializer):
 
 class DislikeDetailSerializer(DislikeSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
-    post = PostSerializer(source="post", read_only=True)
+    post = PostSerializer(read_only=True)
 
     class Meta:
         model = Dislike

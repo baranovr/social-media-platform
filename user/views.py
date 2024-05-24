@@ -37,6 +37,7 @@ class CreateTokenView(ObtainAuthToken):
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
         return self.request.user
@@ -44,6 +45,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
 class PostListView(generics.ListCreateAPIView):
     serializer_class = PostListSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Post.objects.filter(user=self.request.user)
@@ -51,6 +53,7 @@ class PostListView(generics.ListCreateAPIView):
 
 class UserPostDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostDetailSerializer
+    permission_classes = (permissions.IsAuthenticated,)
     lookup_field = "id"
 
     def get_queryset(self):
@@ -94,6 +97,7 @@ class UserSearchDetailView(generics.RetrieveAPIView):
 
 
 class SubscribeView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
     def post(self, request, user_id):
         try:
             subscribed_user = get_user_model().objects.get(id=user_id)
@@ -115,6 +119,7 @@ class SubscribeView(APIView):
 
 class SubscriberListView(generics.ListAPIView):
     serializer_class = SubscribersListSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Subscription.objects.filter(subscribed=self.request.user)
@@ -123,6 +128,7 @@ class SubscriberListView(generics.ListAPIView):
 class SubscribersDetailView(generics.RetrieveAPIView):
     queryset = Subscription.objects.all()
     serializer_class = SubscribersDetailSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
         subscription_id = self.kwargs.get("pk")
@@ -134,6 +140,7 @@ class SubscribersDetailView(generics.RetrieveAPIView):
 
 class SubscriptionsListView(generics.ListAPIView):
     serializer_class = SubscriptionsListSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Subscription.objects.filter(subscriber=self.request.user)
@@ -142,6 +149,7 @@ class SubscriptionsListView(generics.ListAPIView):
 class SubscriptionsDetailView(generics.RetrieveAPIView):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionsDetailSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self):
         subscription_id = self.kwargs.get("pk")
