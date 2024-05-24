@@ -6,7 +6,7 @@ from social_media.models import Post, Comment, Like, Dislike, Subscription
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ("id", "user", "title", "content", "date_posted",)
+        fields = ("id", "user", "photo", "title", "content", "date_posted",)
 
 
 class CommentInPostSerializer(serializers.ModelSerializer):
@@ -131,6 +131,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "user_email",
+            "photo",
             "title",
             "content",
             "date_posted",

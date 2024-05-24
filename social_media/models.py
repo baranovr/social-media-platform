@@ -1,11 +1,23 @@
+import os
+import uuid
+
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
 from django.db import models
 
 from social_media_platform import settings
 
 
+def post_photo_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+    return os.path.join("uploads/posts_photos/", filename)
+
 
 class Post(models.Model):
+    photo = models.ImageField(
+        upload_to=post_photo_path, blank=True, null=True
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
