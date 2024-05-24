@@ -1,5 +1,9 @@
+import os
+import uuid
+
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext as _
+from django.utils.text import slugify
 from django.db import models
 
 from social_media.models import Post
@@ -33,12 +37,19 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
+def avatar_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.username)}-{uuid.uuid4()}{extension}"
+    return os.path.join("uploads/avatars/", filename)
+
+
 class User(AbstractUser):
+    avatar = models.ImageField(_("avatar"), upload_to=avatar_path, blank=True, null=True)
     username = models.CharField(_("username"), max_length=50, unique=True)
     email = models.EmailField(_("email address"), unique=True)
     first_name = models.CharField(_("first name"), max_length=50)
     last_name = models.CharField(_("last name"), max_length=50)
-    about_me = models.TextField(_("about me"), blank=True)
+    about_me = models.TextField(_("about me"), blank=True, null=True)
     posts = models.ForeignKey(
         Post, blank=True,
         null=True,
