@@ -165,7 +165,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         else:
             return [permissions.AllowAny()]
 
-
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
         post_title = self.request.query_params.get("post.title", None)

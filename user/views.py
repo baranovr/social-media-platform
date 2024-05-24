@@ -27,12 +27,10 @@ from user.serializers import (
 
 class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
-    permission_classes = (permissions.AllowAny,)
 
 
 class CreateTokenView(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-    permission_classes = (permissions.AllowAny,)
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
