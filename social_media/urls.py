@@ -18,13 +18,27 @@ router.register(
     SubscribedPostViewSet,
     basename="subscribed-posts"
 ),
+router.register(
+    "liked-posts",
+    views.LikedPostViewSet,
+    basename="liked-posts"
+)
+router.register(
+    "disliked-posts",
+    views.DislikedPostViewSet,
+    basename="disliked-posts"
+)
 router.register("comments", views.CommentViewSet, basename="comments")
 router.register("likes", views.LikeViewSet, basename="likes")
 router.register("dislikes", views.DislikeViewSet, basename="dislikes")
 
 urlpatterns = [
-    path("hashtags/", HashtagListCreateView.as_view(), name="tag-list"),
-    path("hashtags/<int:pk>/", HashtagDeleteView.as_view(), name="tag-del"),
+    path("hashtags/", HashtagListCreateView.as_view(), name="hashtag-list"),
+    path(
+        "hashtags/<int:pk>/",
+        HashtagDeleteView.as_view(),
+        name="hashtag-delete"
+    )
 ] + router.urls
 
 

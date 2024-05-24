@@ -2,7 +2,7 @@ import os
 import uuid
 
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django.db import models
 
@@ -55,7 +55,8 @@ class User(AbstractUser):
     last_name = models.CharField(_("last name"), max_length=50)
     about_me = models.TextField(_("about me"), blank=True, null=True)
     posts = models.ForeignKey(
-        Post, blank=True,
+        Post,
+        blank=True,
         null=True,
         related_name="user_posts",
         on_delete=models.CASCADE

@@ -31,6 +31,12 @@ class Post(models.Model):
     hashtags = models.ManyToManyField(
         Hashtag, related_name="posts", blank=True, null=True
     )
+    likes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="liked_posts", blank=True
+    )
+    dislikes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="disliked_posts", blank=True
+    )
     date_posted = models.DateTimeField(auto_now_add=True)
 
     class Meta:

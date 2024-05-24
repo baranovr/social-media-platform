@@ -25,10 +25,10 @@ from social_media.serializers import (
     DislikeListSerializer,
     LikeDetailSerializer,
     DislikeDetailSerializer,
-    SubscriptionSerializer,
-    SubscribersListSerializer,
-    SubscriptionsListSerializer, SubscribedPostListSerializer,
-    SubscribedPostDetailSerializer
+    SubscribedPostListSerializer,
+    SubscribedPostDetailSerializer,
+    LikedPostSerializer,
+    DislikedPostSerializer
 )
 
 from social_media.models import (
@@ -148,6 +148,24 @@ class SubscribedPostViewSet(viewsets.ReadOnlyModelViewSet):
 
         if self.action == "retrieve":
             return SubscribedPostDetailSerializer
+
+
+class LikedPostViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = LikedPostSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.filter(like__user=user)
+
+
+class DislikedPostViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = DislikedPostSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.filter(dislike__user=user)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

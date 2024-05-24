@@ -101,10 +101,11 @@ class LikeSerializer(serializers.ModelSerializer):
 class LikeListSerializer(LikeSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
     post_title = serializers.CharField(source="post.title", read_only=True)
+    post_id = serializers.IntegerField(source="post.id", read_only=True)
     
     class Meta:
         model = Like
-        fields = ("id", "user", "post_title")
+        fields = ("id", "user", "post_id", "post_title")
 
 
 class LikeDetailSerializer(LikeSerializer):
@@ -125,10 +126,11 @@ class DislikeSerializer(serializers.ModelSerializer):
 class DislikeListSerializer(DislikeSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
     post_title = serializers.CharField(source="post.title", read_only=True)
+    post_id = serializers.IntegerField(source="post.id", read_only=True)
 
     class Meta:
         model = Like
-        fields = ("id", "user", "post_title")
+        fields = ("id", "user", "post_id", "post_title")
 
 
 class DislikeDetailSerializer(DislikeSerializer):
@@ -176,6 +178,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 
 class SubscribedPostDetailSerializer(PostDetailSerializer):
+
     class Meta:
         model = Post
         fields = (
@@ -192,6 +195,34 @@ class SubscribedPostDetailSerializer(PostDetailSerializer):
             "comments",
             )
         read_only_fields = ("username", "user_email")
+
+
+class LikedPostSerializer(PostDetailSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "username",
+            "photo",
+            "title",
+            "content",
+            "hashtags",
+            "date_posted",
+        )
+
+
+class DislikedPostSerializer(PostDetailSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "username",
+            "photo",
+            "title",
+            "content",
+            "hashtags",
+            "date_posted",
+        )
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
