@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -8,12 +7,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+
 from social_media.serializers import (
-    PostListSerializer,
     SubscriberListSerializer,
     SubscriptionsListSerializer,
     PostDetailSerializer,
-    SubscribedDetailSerializer
+    SubscribedDetailSerializer,
+    PostListSerializer
 )
 
 from social_media.models import Subscription, Post
@@ -31,8 +31,8 @@ class CreateUserView(generics.CreateAPIView):
 
 
 class CreateTokenView(ObtainAuthToken):
-    permission_classes = (permissions.AllowAny,)
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+    permission_classes = (permissions.AllowAny,)
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
@@ -42,16 +42,16 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class UserPostView(generics.ListCreateAPIView):
+class PostListView(generics.ListCreateAPIView):
     serializer_class = PostListSerializer
 
     def get_queryset(self):
         return Post.objects.filter(user=self.request.user)
 
 
-class UserPostsDetailView(generics.RetrieveUpdateDestroyAPIView):
+class UserPostDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostDetailSerializer
-    lookup_field = "post_id"
+    lookup_field = "id"
 
     def get_queryset(self):
         return Post.objects.filter(user=self.request.user)

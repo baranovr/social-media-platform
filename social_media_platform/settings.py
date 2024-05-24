@@ -147,3 +147,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ]
 }
+
+REST_KNOX = {
+  "TOKEN_TTL": None,
+}

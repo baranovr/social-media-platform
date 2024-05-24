@@ -19,10 +19,10 @@ class CommentInPostSerializer(serializers.ModelSerializer):
 
 class PostListSerializer(PostSerializer):
     user = serializers.CharField(source="user.username", read_only=True)
-    
+
     class Meta:
         model = Post
-        fields = ("id", "user", "title", "date_posted",)
+        fields = ("id", "user", "date_posted",)
 
 
 class CommentSerializer(serializers.ModelSerializer):

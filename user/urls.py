@@ -1,15 +1,17 @@
 from user.views import (
     CreateUserView,
     UserProfileView,
-    CreateTokenView,
     UserListView,
     SubscribeView,
     SubscriberListView,
     SubscriptionsListView,
     UnsubscribeView,
-    UserPostView,
-    UserPostsDetailView
+    PostListView,
+    UserPostDetailView,
+    CreateTokenView,
 )
+
+from user.logout import logout_view
 
 from django.urls import path
 
@@ -17,10 +19,11 @@ urlpatterns = [
     path("register/", CreateUserView.as_view(), name="register"),
     path("token/", CreateTokenView.as_view(), name="token"),
     path("me/", UserProfileView.as_view(), name="manage-me"),
-    path("me/posts/", UserPostView.as_view(), name="user-posts"),
+    path("me/logout/", logout_view, name="logout"),
+    path("me/posts/", PostListView.as_view(), name="user-posts"),
     path(
-        "me/posts/<post_id>/",
-        UserPostsDetailView.as_view(),
+        "me/posts/<id>/",
+        UserPostDetailView.as_view(),
         name="user-posts"
     ),
     path(
