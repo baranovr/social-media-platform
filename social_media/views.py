@@ -3,11 +3,9 @@ from datetime import datetime
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets, status, generics, permissions
-from rest_framework.decorators import action
 from rest_framework.permissions import (
     IsAuthenticated,
     IsAdminUser,
-    IsAuthenticatedOrReadOnly
 )
 from rest_framework.response import Response
 
@@ -58,18 +56,12 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
 
     def get_permissions(self):
-        if (
-            self.action == "create" 
-            or self.action == "update" 
-            or self.action == "partial_update"
-            or self.action == "destroy"
-        ):
-            return [permissions.IsAuthenticated()]
-
-        if self.action == "retrieve":
+        if self.action == "list":
+            return [permissions.AllowAny()]
+        elif self.action == "retrieve":
             return [permissions.IsAuthenticatedOrReadOnly()]
         else:
-            return [permissions.AllowAny()]
+            return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         username = self.request.query_params.get("user__username", None)
@@ -173,15 +165,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_permissions(self):
-        if (
-            self.action == "create"
-            or self.action == "update"
-            or self.action == "partial_update"
-            or self.action == "destroy"
-        ):
-            return [permissions.IsAuthenticated()]
-        else:
+        if self.action == "list":
             return [permissions.AllowAny()]
+        else:
+            return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
@@ -243,15 +230,10 @@ class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
 
     def get_permissions(self):
-        if (
-            self.action == "create"
-            or self.action == "destroy"
-            or self.action == "update"
-            or self.action == "partial_update"
-        ):
-            return [permissions.IsAuthenticated()]
-        else:
+        if self.action == "list":
             return [permissions.AllowAny()]
+        else:
+            return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
@@ -297,15 +279,10 @@ class DislikeViewSet(viewsets.ModelViewSet):
     serializer_class = DislikeSerializer
 
     def get_permissions(self):
-        if (
-            self.action == "create"
-            or self.action == "destroy"
-            or self.action == "update"
-            or self.action == "partial_update"
-        ):
-            return [permissions.IsAuthenticated()]
-        else:
+        if self.action == "list":
             return [permissions.AllowAny()]
+        else:
+            return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
         username = self.request.query_params.get("user.username", None)
