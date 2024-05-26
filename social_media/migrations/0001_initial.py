@@ -56,7 +56,6 @@ class Migration(migrations.Migration):
                 ('photo', models.ImageField(blank=True, null=True, upload_to=social_media.models.post_photo_path)),
                 ('title', models.CharField(max_length=200)),
                 ('content', models.TextField()),
-                ('published', models.BooleanField(default=False)),
                 ('date_posted', models.DateTimeField(auto_now_add=True)),
             ],
             options={

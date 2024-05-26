@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from django.shortcuts import get_object_or_404
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.permissions import (
@@ -67,7 +69,7 @@ class PostViewSet(viewsets.ModelViewSet):
         username = self.request.query_params.get("user__username", None)
         title = self.request.query_params.get("title", None)
         date_posted = self.request.query_params.get("date_posted", None)
-        tags = self.request.query_params.getlist("tags[]", None)
+        tags = self.request.query_params.getlist("tags", None)
 
         queryset = self.queryset
 
@@ -85,8 +87,6 @@ class PostViewSet(viewsets.ModelViewSet):
         if tags:
             queryset = queryset.filter(tags__name__in=tags)
             return queryset
-
-        queryset = queryset.filter(published=True)
 
         return queryset.distinct()
 
@@ -120,6 +120,43 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         return super().destroy(request, *args, **kwargs)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "username",
+                type=OpenApiTypes.STR,
+                style="form",
+                description="Filter by username",
+            ),
+            OpenApiParameter(
+                "title",
+                type=OpenApiTypes.STR,
+                style="form",
+                description=(
+                        "Filter by post title"
+                ),
+            ),
+            OpenApiParameter(
+                "date_posted",
+                type=OpenApiTypes.DATE,
+                style="form",
+                description=(
+                    "Filter by date posted (ex. ?date=20024-04-05)"
+                )
+            ),
+            OpenApiParameter(
+                "tags",
+                type={"type": "array", "items": {"type": "string"}},
+                style="form",
+                description=(
+                        "Filter by tags"
+                )
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class SubscribedPostViewSet(viewsets.ReadOnlyModelViewSet):
@@ -227,6 +264,35 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         return super().destroy(request, *args, **kwargs)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "username",
+                type=OpenApiTypes.STR,
+                style="form",
+                description="Filter by username",
+            ),
+            OpenApiParameter(
+                "title",
+                type=OpenApiTypes.STR,
+                style="form",
+                description=(
+                        "Filter by post title"
+                ),
+            ),
+            OpenApiParameter(
+                "created_at",
+                type=OpenApiTypes.DATE,
+                style="form",
+                description=(
+                        "Filter by date posted (ex. ?date=20024-04-05)"
+                )
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
@@ -333,3 +399,24 @@ class DislikeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return super().destroy(request, *args, **kwargs)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "username",
+                type=OpenApiTypes.STR,
+                style="form",
+                description="Filter by username",
+            ),
+            OpenApiParameter(
+                "title",
+                type=OpenApiTypes.STR,
+                style="form",
+                description=(
+                        "Filter by post title"
+                ),
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
