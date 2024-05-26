@@ -103,9 +103,9 @@ $ python manage.py migrate
 <h2>🐋📲 Social Media Platform and Docker</h2>
 For convenient development and transfer of the project to other users, Docker was introduced here.
 The image has been uploaded to Docker Hub:
-<br>
 
-> Link: https://hub.docker.com/repository/docker/baranovr/social_media_platform-app/general
+### Link👇:
+> https://hub.docker.com/repository/docker/baranovr/social_media_platform-app/general
 
 How to use (Docker should be installed)👇:
 
@@ -118,9 +118,10 @@ docker-compose up
 
 ## 👮‍♂️ Create Super User
 
-By default, the application prompts you to create a user who does not have administrator rights.
-To access private pages, you will need to create a `superuser`, this can be done by running the special command and follow further instructions:
-
+### ⚠️ By default, an unauthorized user does not have the rights to post or comment on anything.
+To be able to interact with the platform, you need to log in.
+To be able to use the full functionality, you need to be an **admin** (or `superuser`).
+To create a superuser you need to run this command and follow the further instructions👇:
 ```bash
 $ python manage.py createsuperuser
 ```
