@@ -12,7 +12,9 @@ from social_media.serializers import (
     SubscriptionsListSerializer,
     PostDetailSerializer,
     PostListSerializer,
-    SubscriptionsDetailSerializer, SubscribersDetailSerializer
+    SubscriptionsDetailSerializer,
+    SubscribersDetailSerializer,
+    PostUserListSerializer
 )
 
 from social_media.models import Subscription, Post
@@ -43,6 +45,14 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
 class PostListView(generics.ListCreateAPIView):
     serializer_class = PostListSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return Post.objects.filter(user=self.request.user)
+
+
+class PostUserListView(generics.ListAPIView):
+    serializer_class = PostUserListSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):

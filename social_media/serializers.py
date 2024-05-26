@@ -37,6 +37,12 @@ class PostListSerializer(PostSerializer):
         fields = ("id", "user", "title", "date_posted",)
 
 
+class PostUserListSerializer(PostSerializer):
+    class Meta:
+        model = Post
+        fields = ("id", "title", "content", "date_posted",)
+
+
 class SubscribedPostListSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         source="user.username", read_only=True

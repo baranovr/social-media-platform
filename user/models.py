@@ -61,7 +61,7 @@ class User(AbstractUser):
         related_name="user_posts",
         on_delete=models.CASCADE
     )
-    password = models.CharField(_("password"), max_length=30)
+    password = models.CharField(_("password"), max_length=255)
 
     @property
     def full_name(self):
