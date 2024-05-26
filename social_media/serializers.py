@@ -21,7 +21,6 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = (
             "id",
-            "user",
             "photo",
             "title",
             "content",
@@ -35,7 +34,7 @@ class PostListSerializer(PostSerializer):
 
     class Meta:
         model = Post
-        fields = ("id", "user", "date_posted",)
+        fields = ("id", "user", "title", "date_posted",)
 
 
 class SubscribedPostListSerializer(serializers.ModelSerializer):
@@ -52,7 +51,7 @@ class SubscribedPostListSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ("id", "user", "post", "content", "created_at", "updated_at")
+        fields = ("id", "post", "content", "created_at", "updated_at")
 
 
 class CommentListSerializer(CommentSerializer):
@@ -95,7 +94,7 @@ class CommentInPostSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = ("id", "user", "post")
+        fields = ("id", "post")
 
 
 class LikeListSerializer(LikeSerializer):
@@ -120,7 +119,7 @@ class LikeDetailSerializer(LikeSerializer):
 class DislikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dislike
-        fields = ("id", "user", "post")
+        fields = ("id", "post")
 
 
 class DislikeListSerializer(DislikeSerializer):

@@ -84,6 +84,9 @@ class PostViewSet(viewsets.ModelViewSet):
 
         if tags:
             queryset = queryset.filter(tags__name__in=tags)
+            return queryset
+
+        queryset = queryset.filter(published=True)
 
         return queryset.distinct()
 
