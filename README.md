@@ -166,7 +166,7 @@ $ python manage.py createsuperuser
 
 > .../api/user/me/logout/
 
-## Create hashtag(s):
+## 🔎 Create hashtag(s):
 ### **❗️Only administrators can create hashtags**
 
 > .../api/media/hashtags/
