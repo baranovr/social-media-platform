@@ -131,41 +131,41 @@ $ python manage.py createsuperuser
 
 ## To view functionality, go to the following endpoints👇:
 
-### 📋 Registration:
+## 📋 Registration:
 
 > .../api/user/register/
 
-### 🎫 Get token:
+## 🎫 Get token:
 
 > .../api/user/token/
 
- ### 💁‍♂️ Check your profile:
+## 💁‍♂️ Check your profile:
 
 > .../api/user/me/
 
-### 👨‍💻 View your posts:
+## 👨‍💻 View your posts:
 
 > .../api/user/me/posts/
 
-### 👨‍💻 View your followers/subscriptions accordingly:
+## 👨‍💻 View your followers/subscriptions accordingly:
 
 > .../api/user/me/subscribers/
 
 > .../api/user/me/subscriptions/
 
-### 👨‍👩‍👦‍👦 View the all users:
+## 👨‍👩‍👦‍👦 View the all users:
 
 > .../api/users/
 
-### ➡️👨‍💻 Follow user:
+## ➡️👨‍💻 Follow user:
 
 > .../api/users/<user_id>/subscribe/
 
-### 🔓 Log out:
+## 🔓 Log out:
 
 > .../api/user/me/logout/
 
-### Create hashtag(s):
+## Create hashtag(s):
 ### **❗️Only administrators can create hashtags**
 
 > .../api/media/hashtags/
