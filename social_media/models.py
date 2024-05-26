@@ -29,13 +29,17 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     hashtags = models.ManyToManyField(
-        Hashtag, related_name="posts", blank=True, null=True
+        Hashtag, related_name="posts", blank=True
     )
     likes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="liked_posts", blank=True
+        settings.AUTH_USER_MODEL,
+        related_name="liked_posts",
+        blank=True
     )
     dislikes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="disliked_posts", blank=True
+        settings.AUTH_USER_MODEL,
+        related_name="disliked_posts",
+        blank=True
     )
     date_posted = models.DateTimeField(auto_now_add=True)
 

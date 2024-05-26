@@ -17,8 +17,9 @@ The project presents seven models:<br>
 **user/:**
 - `User`
 
-Basically, models are connected using a `ForeignKey`, only the `Hashtag` model and **User** have a `ManyToMany` relationship.
-It is important to note that the User model has created using **build-in Django** model and placed in separate app (`user/`).
+The application has quite complex connections between the models, 
+since it represents the interaction of a Post with likes and comments, as well as a User with Posts, likes and comments.
+But it is important to note that the User model has created using **build-in Django** model and placed in separate app (`user/`).
 
 <br>
 <h2>📱 Social Media Platform</h2>
