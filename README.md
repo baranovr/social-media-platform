@@ -102,7 +102,8 @@ $ python manage.py migrate
 
 <h2>🐋📲 Social Media Platform and Docker</h2>
 For convenient development and transfer of the project to other users, Docker was introduced here.
-The image has been uploaded to **Docker Hub**:
+The image has been uploaded to Docker Hub:
+<br>
 
 > Link: https://hub.docker.com/repository/docker/baranovr/social_media_platform-app/general
 
