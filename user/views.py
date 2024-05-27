@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from social_media.models import Subscription, Post
 from social_media.serializers import (
     SubscribersListSerializer,
     SubscriptionsListSerializer,
@@ -16,8 +17,6 @@ from social_media.serializers import (
     SubscribersDetailSerializer,
     PostUserListSerializer
 )
-
-from social_media.models import Subscription, Post
 
 from user.serializers import (
     UserSerializer,

@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.shortcuts import get_object_or_404
+
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
@@ -30,7 +31,6 @@ from social_media.serializers import (
     LikedPostSerializer,
     DislikedPostSerializer
 )
-
 from social_media.models import (
     Hashtag,
     Post,

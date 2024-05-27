@@ -8,6 +8,7 @@ from django.db import models
 
 from social_media.models import Post
 
+
 class UserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
         if not email:

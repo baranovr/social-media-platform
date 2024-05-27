@@ -1,8 +1,8 @@
+import time
+
 from django.core.management.base import BaseCommand, no_translations
 from django.db import connections
 from django.db.utils import OperationalError
-
-import time
 
 
 class Command(BaseCommand):

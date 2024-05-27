@@ -1,3 +1,5 @@
+from django.urls import path
+
 from user.views import (
     CreateUserView,
     UserProfileView,
@@ -13,10 +15,8 @@ from user.views import (
     SubscribersDetailView,
     PostUserListView,
 )
-
 from user.logout import logout_view
 
-from django.urls import path
 
 urlpatterns = [
     path("register/", CreateUserView.as_view(), name="register"),

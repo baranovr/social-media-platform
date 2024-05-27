@@ -11,6 +11,8 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'social_media_platform.settings')
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE", "social_media_platform.settings"
+)
 
 application = get_wsgi_application()
