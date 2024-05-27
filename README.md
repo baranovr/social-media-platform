@@ -185,6 +185,9 @@ $ python manage.py createsuperuser
    |    |    |-- commands/
    |    |        |-- wait_for_db.py         # Custom command for waiting db
    |    |
+   |    |-- tests/
+   |    |    |-- *.py                       # All test files
+   |    |
    |    |-- admin.py                        # Registration models in admin page 
    |    |-- apps.py
    |    |-- models.py                       # All social media models
