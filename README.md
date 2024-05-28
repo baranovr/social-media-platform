@@ -17,6 +17,11 @@ The project presents seven models:<br>
 **user/:**
 - `User`
 
+**Here you can you see the database structure:**
+
+![db_strucure.png](..%2F..%2FPictures%2FScreenshots%2Fdb_strucure.png)
+
+
 The application has quite complex connections between the models, 
 since it represents the interaction of a Post with likes and comments, as well as a User with Posts, likes and comments.
 But it is important to note that the User model has created using **build-in Django** model and placed in separate app (`user/`).
