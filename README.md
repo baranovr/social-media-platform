@@ -19,7 +19,7 @@ The project presents seven models:<br>
 
 **Here you can you see the database structure:**
 
-![db_strucure](db_strucure.jpg)
+![db_structure](db_strucure.jpg)
 
 The application has quite complex connections between the models, 
 since it represents the interaction of a Post with likes and comments, as well as a User with Posts, likes and comments.
