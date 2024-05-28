@@ -22,9 +22,13 @@ def post_photo_path(instance, filename):
 
 
 class Post(models.Model):
-    photo = models.ImageField(upload_to=post_photo_path, blank=True, null=True)
+    photo = models.ImageField(
+        upload_to=post_photo_path, blank=True, null=True
+    )
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="posts"
     )
     title = models.CharField(max_length=200)
     content = models.TextField()
@@ -33,13 +37,11 @@ class Post(models.Model):
     )
     likes = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        related_name="liked_posts",
-        blank=True
+        related_name="liked_posts", blank=True
     )
     dislikes = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
-        related_name="disliked_posts",
-        blank=True
+        related_name="disliked_posts", blank=True
     )
     date_posted = models.DateTimeField(auto_now_add=True)
 
@@ -51,9 +53,13 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="comments"
+    )
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="comments"
     )
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -68,9 +74,15 @@ class Comment(models.Model):
 
 class Like(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="likes"
     )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name="likes"
+    )
 
     class Meta:
         unique_together = (("user", "post"),)
@@ -82,9 +94,15 @@ class Like(models.Model):
 
 class Dislike(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="dislikes"
     )
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name="dislikes"
+    )
 
     class Meta:
         unique_together = (("user", "post"),)
@@ -96,10 +114,14 @@ class Dislike(models.Model):
 
 class Subscription(models.Model):
     subscriber = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="subscriber"
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="subscriptions"
     )
     subscribed = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="subscribed"
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="subscribers"
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
